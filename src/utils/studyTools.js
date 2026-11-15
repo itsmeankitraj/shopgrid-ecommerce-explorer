@@ -87,37 +87,48 @@ export function convertMeasurement(value, category, fromUnit, toUnit) {
   return { value: (amount * factors[fromUnit]) / factors[toUnit] };
 }
 
-export function calculateSgpa(subjects) {
-  if (!Array.isArray(subjects) || subjects.length === 0) {
-    return { error: "Add at least one subject first." };
+export function calculateSgpa(marks) {
+  if (!Array.isArray(marks) || marks.length === 0) {
+    return { error: "Enter marks for at least one subject." };
   }
 
-  const hasIncompleteRow = subjects.some((subject) => {
-    const hasAnyValue = subject.name.trim() !== "" || subject.credits !== "" || subject.gradePoint !== "";
-    const isComplete = subject.credits !== "" && subject.gradePoint !== "";
-    return hasAnyValue && !isComplete;
-  });
+  const enteredMarks = marks.filter((mark) => String(mark ?? "").trim() !== "");
+  if (enteredMarks.length === 0) return { error: "Enter marks for at least one subject." };
 
-  if (hasIncompleteRow) {
-    return { error: "Complete or remove each started subject row." };
+  const numericMarks = enteredMarks.map(Number);
+  if (numericMarks.some((mark) => !Number.isFinite(mark) || mark < 0 || mark > 100)) {
+    return { error: "Marks must be valid numbers between 0 and 100." };
   }
 
-  const completed = subjects.filter((subject) => subject.credits !== "" && subject.gradePoint !== "");
-  if (completed.length === 0) return { error: "Enter credits and grade points for at least one subject." };
+  const totalGradePoints = numericMarks.reduce((total, mark) => {
+    if (mark >= 90) return total + 10;
+    if (mark >= 80) return total + 9;
+    if (mark >= 70) return total + 8;
+    if (mark >= 60) return total + 7;
+    if (mark >= 50) return total + 6;
+    if (mark >= 40) return total + 5;
+    return total;
+  }, 0);
 
-  const invalid = completed.some((subject) => {
-    const credits = Number(subject.credits);
-    const gradePoint = Number(subject.gradePoint);
-    return !Number.isFinite(credits) || credits <= 0 || !Number.isFinite(gradePoint) || gradePoint < 0 || gradePoint > 10;
-  });
+  return {
+    sgpa: totalGradePoints / numericMarks.length,
+    subjectCount: numericMarks.length,
+  };
+}
 
-  if (invalid) return { error: "Credits must be positive; grade points must be between 0 and 10." };
+export function calculateCgpa(semesterGrades) {
+  if (!Array.isArray(semesterGrades) || semesterGrades.length === 0) {
+    return { error: "Enter an SGPA for at least one semester." };
+  }
 
-  const totalCredits = completed.reduce((sum, subject) => sum + Number(subject.credits), 0);
-  const weightedPoints = completed.reduce(
-    (sum, subject) => sum + Number(subject.credits) * Number(subject.gradePoint),
-    0,
-  );
+  const enteredGrades = semesterGrades.filter((grade) => String(grade ?? "").trim() !== "");
+  if (enteredGrades.length === 0) return { error: "Enter an SGPA for at least one semester." };
 
-  return { sgpa: weightedPoints / totalCredits, totalCredits, subjectCount: completed.length };
+  const numericGrades = enteredGrades.map(Number);
+  if (numericGrades.some((grade) => !Number.isFinite(grade) || grade < 0 || grade > 10)) {
+    return { error: "Semester SGPAs must be valid numbers between 0 and 10." };
+  }
+
+  const total = numericGrades.reduce((sum, grade) => sum + grade, 0);
+  return { cgpa: total / numericGrades.length, semesterCount: numericGrades.length };
 }
