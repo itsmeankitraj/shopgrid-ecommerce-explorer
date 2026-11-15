@@ -120,17 +120,11 @@ shopgrid/
 
 ## Notes and limitations
 
-- This is a front-end portfolio project. Checkout and real payments are intentionally not included.
+- This is a testing project. Checkout and real payments are intentionally not included.
 - Product information is demo data and does not represent real inventory.
 - Product photos and Google Fonts are loaded from external URLs, so an internet connection is needed for those visual assets. The core app and its interactions run locally without a backend.
 - The cart and saved project briefs are stored in the current browser's local storage. Clearing browser site data will clear them.
 - Study books and practice platforms are linked to their official external websites; ShopGrid does not host book files or course content.
 - SGPA uses the common credit-weighted formula. Check your university's own regulations for official result calculations.
-
-## Suggested GitHub repository name
-
-`shopgrid-ecommerce-explorer`
-
-## Suggested repository description
-
+  
 A responsive React product explorer with search, filters, sorting, pagination, a localStorage-powered cart and an engineering Study Desk with project tools, books and practice links.
