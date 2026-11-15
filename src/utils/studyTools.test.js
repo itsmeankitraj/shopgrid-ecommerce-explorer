@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { calculateOhmsLaw, calculateSgpa, convertMeasurement } from "./studyTools.js";
+import { calculateCgpa, calculateOhmsLaw, calculateSgpa, convertMeasurement } from "./studyTools.js";
 
 test("Ohm's law calculates resistance and power from voltage and current", () => {
   const { result } = calculateOhmsLaw({ voltage: "12", current: "2", resistance: "" });
@@ -19,18 +19,14 @@ test("unit converter handles metric length and temperature", () => {
   assert.match(convertMeasurement("", "length", "cm", "m").error, /Enter a value/);
 });
 
-test("SGPA uses credit-weighted grade points", () => {
-  const result = calculateSgpa([
-    { name: "Maths", credits: "4", gradePoint: "9" },
-    { name: "Physics", credits: "3", gradePoint: "8" },
-  ]);
-  assert.equal(result.totalCredits, 7);
-  assert.equal(result.sgpa, (4 * 9 + 3 * 8) / 7);
+test("SGPA maps subject marks to grade points and averages entered subjects", () => {
+  const result = calculateSgpa(["95", "80", "72", "65", "58", "40", "39", ""]);
+  assert.equal(result.subjectCount, 7);
+  assert.equal(result.sgpa, 45 / 7);
 });
 
-test("SGPA reports incomplete rows instead of silently ignoring them", () => {
-  const result = calculateSgpa([{ name: "Maths", credits: "4", gradePoint: "" }]);
-  assert.match(result.error, /Complete or remove/);
+test("SGPA uses the grade-point boundary for each mark band", () => {
+  assert.equal(calculateSgpa(["90", "80", "70", "60", "50", "40", "0"]).sgpa, 45 / 7);
 });
 
 test("Ohm's law derives voltage from current and resistance", () => {
@@ -49,7 +45,20 @@ test("unit converter handles mass and rejects a blank input", () => {
   assert.match(convertMeasurement("", "length", "cm", "m").error, /Enter a value/);
 });
 
-test("SGPA rejects invalid grade points and zero credits", () => {
-  assert.match(calculateSgpa([{ name: "Maths", credits: "0", gradePoint: "9" }]).error, /Credits must be positive/);
-  assert.match(calculateSgpa([{ name: "Maths", credits: "4", gradePoint: "11" }]).error, /grade points must be between 0 and 10/);
+test("SGPA rejects out-of-range and non-numeric marks and requires an entry", () => {
+  assert.match(calculateSgpa([""]).error, /at least one subject/);
+  assert.match(calculateSgpa(["101"]).error, /between 0 and 100/);
+  assert.match(calculateSgpa(["abc"]).error, /between 0 and 100/);
+});
+
+test("CGPA averages entered semester SGPAs", () => {
+  const result = calculateCgpa(["8.5", "", "9.5"]);
+  assert.equal(result.semesterCount, 2);
+  assert.equal(result.cgpa, 9);
+});
+
+test("CGPA rejects invalid semester SGPAs and requires an entry", () => {
+  assert.match(calculateCgpa(["", ""]).error, /at least one semester/);
+  assert.match(calculateCgpa(["10.1"]).error, /between 0 and 10/);
+  assert.match(calculateCgpa(["abc"]).error, /between 0 and 10/);
 });
