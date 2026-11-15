@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Icon from "./Icon.jsx";
 import { practiceResources, studyBooks } from "../data/studyResources.js";
-import { calculateOhmsLaw, calculateSgpa, convertMeasurement } from "../utils/studyTools.js";
+import { calculateCgpa, calculateOhmsLaw, calculateSgpa, convertMeasurement } from "../utils/studyTools.js";
 import "./StudySection.css";
 
 const TOOL_CARDS = [
@@ -36,10 +36,10 @@ const TOOL_CARDS = [
     id: "sgpa",
     number: "04",
     mark: "Σ",
-    title: "SGPA Calculator",
+    title: "SGPA & CGPA Calculator",
     category: "ACADEMICS",
-    description: "Calculate a credit-weighted SGPA from subject credits and grade points.",
-    action: "Calculate SGPA",
+    description: "Convert subject marks to grade points and calculate semester SGPA or overall CGPA.",
+    action: "Calculate grades",
   },
 ];
 
@@ -306,67 +306,78 @@ function UnitConverter() {
 }
 
 function SgpaCalculator() {
-  const [subjects, setSubjects] = useState([
-    { id: 1, name: "", credits: "", gradePoint: "" },
-    { id: 2, name: "", credits: "", gradePoint: "" },
-    { id: 3, name: "", credits: "", gradePoint: "" },
-  ]);
-  const [result, setResult] = useState(null);
+  const [mode, setMode] = useState("sgpa");
+  const [marks, setMarks] = useState(() => Array(8).fill(""));
+  const [semesterGrades, setSemesterGrades] = useState(() => Array(8).fill(""));
+  const [sgpaResult, setSgpaResult] = useState(null);
+  const [cgpaResult, setCgpaResult] = useState(null);
 
-  function updateSubject(id, field, value) {
-    setSubjects((current) => current.map((subject) => subject.id === id ? { ...subject, [field]: value } : subject));
-    setResult(null);
-  }
-
-  function addSubject() {
-    if (subjects.length >= 10) return;
-    setSubjects((current) => [...current, { id: Date.now(), name: "", credits: "", gradePoint: "" }]);
-    setResult(null);
-  }
-
-  function removeSubject(id) {
-    setSubjects((current) => current.filter((subject) => subject.id !== id));
-    setResult(null);
-  }
-
-  function handleCalculate() {
-    setResult(calculateSgpa(subjects));
+  function updateValue(setValues, setCalculation, index, value) {
+    setValues((current) => current.map((entry, entryIndex) => entryIndex === index ? value : entry));
+    setCalculation(null);
   }
 
   return (
-    <div className="sgpa-layout">
-      <div className="sgpa-input-card">
-        <div className="sgpa-table-head"><span>SUBJECT (OPTIONAL)</span><span>CREDITS</span><span>GRADE POINT (0–10)</span><span /></div>
-        <div className="sgpa-rows">
-          {subjects.map((subject, index) => (
-            <div className="sgpa-row" key={subject.id}>
-              <input aria-label={`Subject ${index + 1} name`} value={subject.name} onChange={(event) => updateSubject(subject.id, "name", event.target.value)} placeholder={`Subject ${index + 1}`} maxLength={40} />
-              <input aria-label={`Subject ${index + 1} credits`} type="number" min="0.1" step="any" value={subject.credits} onChange={(event) => updateSubject(subject.id, "credits", event.target.value)} placeholder="4" />
-              <input aria-label={`Subject ${index + 1} grade point`} type="number" min="0" max="10" step="any" value={subject.gradePoint} onChange={(event) => updateSubject(subject.id, "gradePoint", event.target.value)} placeholder="9" />
-              <button className="study-remove-row" type="button" onClick={() => removeSubject(subject.id)} disabled={subjects.length === 1} aria-label={`Remove subject ${index + 1}`}><Icon name="close" size={15} /></button>
-            </div>
-          ))}
+    <>
+      <div className="sgpa-mode-switch" role="group" aria-label="Choose grade calculation">
+        <button className={mode === "sgpa" ? "active" : ""} type="button" aria-pressed={mode === "sgpa"} onClick={() => setMode("sgpa")}>SGPA from marks</button>
+        <button className={mode === "cgpa" ? "active" : ""} type="button" aria-pressed={mode === "cgpa"} onClick={() => setMode("cgpa")}>CGPA from semesters</button>
+      </div>
+      <div className="sgpa-layout">
+        <div className="sgpa-input-card">
+          <span className="study-form-step">{mode === "sgpa" ? "ENTER SUBJECT MARKS" : "ENTER SEMESTER SGPAS"}</span>
+          <h4>{mode === "sgpa" ? "SGPA from marks" : "CGPA from semester results"}</h4>
+          <p>{mode === "sgpa" ? "Marks are out of 100. Leave a subject blank to exclude it." : "Enter each semester SGPA out of 10. Blank semesters are excluded."}</p>
+          <div className="grade-rows">
+            {(mode === "sgpa" ? marks : semesterGrades).map((value, index) => (
+              <label className="grade-row" key={`${mode}-${index}`}>
+                <span>{mode === "sgpa" ? `Subject ${index + 1}` : `Semester ${index + 1}`}</span>
+                <input
+                  aria-label={mode === "sgpa" ? `Subject ${index + 1} marks` : `Semester ${index + 1} SGPA`}
+                  type="number"
+                  min="0"
+                  max={mode === "sgpa" ? "100" : "10"}
+                  step="any"
+                  value={value}
+                  onChange={(event) => mode === "sgpa"
+                    ? updateValue(setMarks, setSgpaResult, index, event.target.value)
+                    : updateValue(setSemesterGrades, setCgpaResult, index, event.target.value)}
+                  placeholder={mode === "sgpa" ? "e.g. 85" : "e.g. 8.5"}
+                />
+              </label>
+            ))}
+          </div>
+          <div className="sgpa-actions">
+            <button
+              className="study-primary-button"
+              type="button"
+              onClick={() => mode === "sgpa" ? setSgpaResult(calculateSgpa(marks)) : setCgpaResult(calculateCgpa(semesterGrades))}
+            >
+              Calculate {mode.toUpperCase()} <Icon name="arrow" size={16} />
+            </button>
+          </div>
         </div>
-        <div className="sgpa-actions">
-          <button className="study-text-button" type="button" onClick={addSubject} disabled={subjects.length >= 10}>+ Add subject</button>
-          <button className="study-primary-button" type="button" onClick={handleCalculate}>Calculate SGPA <Icon name="arrow" size={16} /></button>
+        <div className="sgpa-result-card">
+          <span className="study-form-step">{mode === "sgpa" ? "YOUR SEMESTER RESULT" : "YOUR OVERALL RESULT"}</span>
+          {(mode === "sgpa" ? sgpaResult : cgpaResult)?.error ? (
+            <p className="sgpa-result-message" role="alert">{(mode === "sgpa" ? sgpaResult : cgpaResult).error}</p>
+          ) : mode === "sgpa" && sgpaResult ? (
+            <>
+              <strong className="sgpa-score">{sgpaResult.sgpa.toFixed(2)}<small>/ 10</small></strong>
+              <p>SGPA from {sgpaResult.subjectCount} entered subject marks.</p>
+            </>
+          ) : mode === "cgpa" && cgpaResult ? (
+            <>
+              <strong className="sgpa-score">{cgpaResult.cgpa.toFixed(2)}<small>/ 10</small></strong>
+              <p>CGPA across {cgpaResult.semesterCount} entered semesters.</p>
+            </>
+          ) : (
+            <div className="calculator-placeholder"><span>Σ</span><p>{mode === "sgpa" ? "Enter subject marks, then calculate your SGPA." : "Enter semester SGPAs, then calculate your CGPA."}</p></div>
+          )}
+          <p className="study-small-note">{mode === "sgpa" ? "Marks map to grade points: 90+ → 10, 80+ → 9, 70+ → 8, 60+ → 7, 50+ → 6, 40+ → 5, below 40 → 0. SGPA is the average of entered subject grade points." : "CGPA is the average of entered semester SGPAs. Check your university’s official grading rules before using this as an official result."}</p>
         </div>
       </div>
-      <div className="sgpa-result-card">
-        <span className="study-form-step">YOUR SEMESTER RESULT</span>
-        {result?.error ? (
-          <p className="sgpa-result-message" role="alert">{result.error}</p>
-        ) : result ? (
-          <>
-            <strong className="sgpa-score">{result.sgpa.toFixed(2)}<small>/ 10</small></strong>
-            <p>Weighted SGPA across {result.subjectCount} subjects and {result.totalCredits} total credits.</p>
-          </>
-        ) : (
-          <div className="calculator-placeholder"><span>Σ</span><p>Enter each subject’s credits and grade points, then calculate.</p></div>
-        )}
-        <p className="study-small-note">Uses Σ(credits × grade points) ÷ Σ(credits). Your university’s official grading rules may differ.</p>
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -381,7 +392,7 @@ function ToolContent({ activeTool, onClose }) {
     return <ToolPanel title="Unit Converter" subtitle="Convert everyday measurement units used in engineering and science." onClose={onClose}><UnitConverter /></ToolPanel>;
   }
   if (activeTool === "sgpa") {
-    return <ToolPanel title="SGPA Calculator" subtitle="Calculate a credit-weighted semester grade point average." onClose={onClose}><SgpaCalculator /></ToolPanel>;
+    return <ToolPanel title="SGPA & CGPA Calculator" subtitle="Convert marks into grade points for SGPA, or average semester SGPAs for CGPA." onClose={onClose}><SgpaCalculator /></ToolPanel>;
   }
   return null;
 }
