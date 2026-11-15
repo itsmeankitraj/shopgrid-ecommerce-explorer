@@ -1,4 +1,4 @@
-/* Study desk — shares ShopGrid's charcoal, muted-lime visual language. */
+/* Study desk â€” shares ShopGrid's charcoal, muted-lime visual language. */
 .study-section {
   margin-top: 94px;
   padding-top: 72px;
@@ -50,13 +50,13 @@
 .study-close-button:hover { border-color: var(--accent); color: var(--accent); }
 .planner-layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(280px, .9fr); gap: 22px; }
 .study-form, .saved-plans-panel, .calculator-input-card, .calculator-result-card, .converter-output, .sgpa-input-card, .sgpa-result-card { padding: 19px; border: 1px solid var(--line); border-radius: 5px; background: rgba(20, 26, 22, .8); }
-.study-form-intro h4, .saved-plans-heading h4, .calculator-input-card h4 { margin: 7px 0 5px; color: #eaf0e4; font: 600 15px "Manrope", sans-serif; }
+.study-form-intro h4, .saved-plans-heading h4, .calculator-input-card h4, .sgpa-input-card h4 { margin: 7px 0 5px; color: #eaf0e4; font: 600 15px "Manrope", sans-serif; }
 .study-form-intro p { margin: 0 0 17px; color: #849084; font-size: 9px; line-height: 1.65; }
 .study-form label, .converter-controls label { display: grid; gap: 7px; margin-top: 12px; color: #b8c2b4; font-size: 9px; font-weight: 600; }
-.study-form input, .study-form select, .study-form textarea, .calculator-fields input, .converter-controls input, .converter-controls select, .sgpa-row input { width: 100%; min-width: 0; min-height: 38px; padding: 9px 10px; border: 1px solid var(--line-strong); border-radius: 4px; outline: none; color: #e9eee5; background: #0e120f; font-size: 10px; }
+.study-form input, .study-form select, .study-form textarea, .calculator-fields input, .converter-controls input, .converter-controls select, .sgpa-row input, .grade-row input { width: 100%; min-width: 0; min-height: 38px; padding: 9px 10px; border: 1px solid var(--line-strong); border-radius: 4px; outline: none; color: #e9eee5; background: #0e120f; font-size: 10px; }
 .study-form textarea { min-height: 78px; resize: vertical; line-height: 1.6; }
-.study-form input::placeholder, .study-form textarea::placeholder, .calculator-fields input::placeholder, .sgpa-row input::placeholder { color: #626e62; }
-.study-form input:focus, .study-form select:focus, .study-form textarea:focus, .calculator-fields input:focus, .converter-controls input:focus, .converter-controls select:focus, .sgpa-row input:focus { border-color: rgba(197, 239, 114, .6); }
+.study-form input::placeholder, .study-form textarea::placeholder, .calculator-fields input::placeholder, .sgpa-row input::placeholder, .grade-row input::placeholder { color: #626e62; }
+.study-form input:focus, .study-form select:focus, .study-form textarea:focus, .calculator-fields input:focus, .converter-controls input:focus, .converter-controls select:focus, .sgpa-row input:focus, .grade-row input:focus { border-color: rgba(197, 239, 114, .6); }
 .study-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .study-primary-button, .study-secondary-button { display: inline-flex; min-height: 39px; align-items: center; justify-content: center; gap: 12px; padding: 0 13px; border: 1px solid var(--accent); border-radius: 4px; color: #12170d; background: var(--accent); font-size: 9px; font-weight: 700; transition: background 150ms, transform 150ms; }
 .study-primary-button:hover { transform: translateY(-1px); background: #d7f79f; }
@@ -112,15 +112,15 @@
 .converter-output > strong { margin: 13px 0 7px; color: var(--accent); font: 600 clamp(27px, 4vw, 39px)/1.1 "Manrope", sans-serif; overflow-wrap: anywhere; }
 .converter-output > span:last-child { color: #9ba89a; font-size: 9px; }
 .converter-output .converter-error { color: #e5a69b; font: 500 11px/1.6 "DM Sans", sans-serif; }
+.sgpa-mode-switch { display: flex; gap: 5px; margin-bottom: 14px; padding: 4px; border: 1px solid var(--line); border-radius: 5px; background: rgba(20, 26, 22, .8); }
+.sgpa-mode-switch button { min-height: 34px; flex: 1; border: 1px solid transparent; border-radius: 3px; color: #a0ac9c; background: transparent; font-size: 9px; font-weight: 600; }
+.sgpa-mode-switch button.active { border-color: rgba(197, 239, 114, .22); color: var(--accent); background: rgba(197, 239, 114, .08); }
 .sgpa-layout { grid-template-columns: minmax(0, 1.25fr) minmax(220px, .75fr); }
 .sgpa-input-card { min-width: 0; }
-.sgpa-table-head, .sgpa-row { display: grid; grid-template-columns: minmax(100px, 1.35fr) minmax(65px, .7fr) minmax(90px, .95fr) 24px; align-items: center; gap: 8px; }
-.sgpa-table-head { padding: 0 0 9px; color: #819078; font-size: 7px; font-weight: 700; letter-spacing: .8px; }
-.sgpa-rows { display: grid; gap: 8px; }
-.sgpa-row input { min-height: 35px; padding: 7px 8px; }
-.study-remove-row { display: grid; width: 24px; height: 28px; place-items: center; padding: 0; border: 0; color: #849083; background: transparent; }
-.study-remove-row:hover:not(:disabled) { color: #e49b90; }
-.study-remove-row:disabled { opacity: .3; cursor: not-allowed; }
+.sgpa-input-card > p { margin: 5px 0 0; color: #849084; font-size: 9px; line-height: 1.6; }
+.grade-rows { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px 12px; margin-top: 15px; }
+.grade-row { display: grid; grid-template-columns: minmax(0, 1fr) 82px; align-items: center; gap: 8px; color: #b8c2b4; font-size: 9px; }
+.grade-row input { min-height: 35px; padding: 7px 8px; }
 .sgpa-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 15px; }
 .sgpa-result-card { display: flex; flex-direction: column; justify-content: flex-start; }
 .sgpa-score { margin-top: 17px; color: var(--accent); font: 600 43px/1 "Manrope", sans-serif; letter-spacing: -2px; }
@@ -201,9 +201,8 @@
   .study-form-row { grid-template-columns: 1fr; gap: 0; }
   .calculator-fields { grid-template-columns: 1fr; }
   .converter-controls { padding: 14px; }
-  .sgpa-table-head, .sgpa-row { grid-template-columns: minmax(76px, 1.15fr) minmax(54px, .7fr) minmax(76px, .9fr) 22px; gap: 5px; }
-  .sgpa-table-head { font-size: 6px; letter-spacing: .3px; }
-  .sgpa-row input { padding-inline: 5px; font-size: 8px; }
+  .grade-rows { grid-template-columns: 1fr; }
+  .grade-row { grid-template-columns: minmax(0, 1fr) 88px; }
   .sgpa-actions { align-items: flex-start; flex-direction: column; }
   .sgpa-actions .study-primary-button { width: 100%; }
   .study-book-card { grid-template-columns: 78px minmax(0, 1fr); gap: 11px; padding: 11px; }
