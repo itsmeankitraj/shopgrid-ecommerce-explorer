@@ -17,7 +17,7 @@ ShopGrid is a portfolio-oriented product explorer with a built-in engineering St
 - Study Desk with an engineering project brief planner saved in local storage
 - Interactive Ohm’s law calculator (enter any two of voltage, current and resistance)
 - Unit converter for length, mass and temperature
-- Credit-weighted SGPA calculator with subject rows
+- SGPA calculator that maps subject marks to grade points, plus a CGPA calculator for semester averages
 - Searchable reading shelf linking to six official online books and eTextbooks
 - Practice links for freeCodeCamp, Exercism, MDN and GitHub Skills
 - Accessible labels, keyboard-dismissable dialogs and reduced-motion support
@@ -120,11 +120,17 @@ shopgrid/
 
 ## Notes and limitations
 
-- This is a testing project. Checkout and real payments are intentionally not included.
+- This is a front-end portfolio project. Checkout and real payments are intentionally not included.
 - Product information is demo data and does not represent real inventory.
 - Product photos and Google Fonts are loaded from external URLs, so an internet connection is needed for those visual assets. The core app and its interactions run locally without a backend.
 - The cart and saved project briefs are stored in the current browser's local storage. Clearing browser site data will clear them.
 - Study books and practice platforms are linked to their official external websites; ShopGrid does not host book files or course content.
-- SGPA uses the common credit-weighted formula. Check your university's own regulations for official result calculations.
-  
+- SGPA maps marks to grade points using the bands shown in the Study Desk and averages entered subjects; CGPA averages entered semester SGPAs. Check your university's regulations for official results.
+
+## Suggested GitHub repository name
+
+`shopgrid-ecommerce-explorer`
+
+## Suggested repository description
+
 A responsive React product explorer with search, filters, sorting, pagination, a localStorage-powered cart and an engineering Study Desk with project tools, books and practice links.
